@@ -19,6 +19,12 @@ app.use('/upload', uploadRoutes);
 const tenderRoutes = require('./routes/tender');
 app.use('/tenders', tenderRoutes);
 
+const applicationRoutes = require('./routes/application');
+app.use('/apply', applicationRoutes);
+
+const searchRoutes = require('./routes/search');
+app.use('/search', searchRoutes);
+
 
 // Test protected route
 const authenticate = require('./middlewares/jwt');
