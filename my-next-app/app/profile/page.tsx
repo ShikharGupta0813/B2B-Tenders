@@ -34,13 +34,13 @@ export default function ProfilePage() {
       setIndustry(data.industry);
       setDescription(data.description);
       setImageUrl(data.image_url);
-    } catch(err:any) {
+    } catch (err: any) {
       console.error('Failed to fetch company:', err);
-    if (err.response && err.response.status === 404) {
-      setCompany(null);  // No profile yet
-    } else {
-      alert('Error fetching company profile.');
-    }
+      if (err.response && err.response.status === 404) {
+        setCompany(null);
+      } else {
+        alert('Error fetching company profile.');
+      }
     }
   }
 
@@ -89,51 +89,74 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Company Profile</h1>
-       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Company Name"
-          className="w-full p-2 border rounded"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Industry"
-          className="w-full p-2 border rounded"
-          value={industry}
-          onChange={(e) => setIndustry(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Description"
-          className="w-full p-2 border rounded"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        ></textarea>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10 px-4">
+      <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-xl">
+        <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
+          Company Profile
+        </h1>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-          className="w-full"
-        />
-        {imageUrl && (
-          <img src={imageUrl} alt="Logo" className="h-20 mt-2 rounded" />
-        )}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Company Name</label>
+            <input
+              type="text"
+              placeholder="Enter Company Name"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {company ? 'Update Profile' : 'Create Profile'}
-        </button>
-      </form>
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Industry</label>
+            <input
+              type="text"
+              placeholder="Enter Industry"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Description</label>
+            <textarea
+              placeholder="Enter Description"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows={4}
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Upload Logo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
+              className="w-full"
+            />
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt="Logo"
+                className="h-24 mt-4 rounded border border-gray-300"
+              />
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition"
+          >
+            {company ? 'Update Profile' : 'Create Profile'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

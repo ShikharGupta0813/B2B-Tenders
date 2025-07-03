@@ -30,24 +30,35 @@ export default function MyTendersPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">My Posted Tenders</h1>
-      {tenders.length > 0 ? (
-        tenders.map((tender) => (
-          <div
-            key={tender.id}
-            className="p-4 mb-3 border rounded cursor-pointer hover:bg-gray-100 transition"
-            onClick={() => router.push(`/application/${tender.id}`)}
-          >
-            <h3 className="font-bold text-lg">{tender.title}</h3>
-            <p>{tender.description}</p>
-            <p><strong>Budget:</strong> ₹{tender.budget}</p>
-            <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}</p>
+    <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+        My Posted Tenders
+      </h1>
+
+      <section className="bg-white rounded-xl shadow-md p-6">
+        {tenders.length > 0 ? (
+          <div className="space-y-5">
+            {tenders.map((tender) => (
+              <div
+                key={tender.id}
+                className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm cursor-pointer hover:bg-gray-100 transition"
+                onClick={() => router.push(`/application/${tender.id}`)}
+              >
+                <h3 className="font-bold text-lg text-gray-800">{tender.title}</h3>
+                <p className="text-gray-700 mt-2">{tender.description}</p>
+                <p className="mt-2 text-gray-800">
+                  <strong>Budget:</strong> ₹{tender.budget}
+                </p>
+                <p className="text-gray-800">
+                  <strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
           </div>
-        ))
-      ) : (
-        <p>No tenders posted yet.</p>
-      )}
+        ) : (
+          <p className="text-gray-600 text-center">No tenders posted yet.</p>
+        )}
+      </section>
     </div>
   );
 }

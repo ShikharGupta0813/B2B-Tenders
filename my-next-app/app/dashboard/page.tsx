@@ -10,6 +10,7 @@ export default function DashboardPage() {
   const [tenders, setTenders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!token) {
@@ -18,7 +19,21 @@ export default function DashboardPage() {
       fetchData();
     }
   }, []);
+  async function fetchTenders(pageNumber = 1) {
+    try {
+      const res = await axios.get(`http://localhost:5000/tenders?page=${pageNumber}`);
+      setTenders(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  useEffect(() => {
+    fetchTenders(page);
+  }, [page]);
+  
   async function fetchData() {
     try {
       const companyRes = await axios.get('http://localhost:5000/company', {
@@ -41,7 +56,7 @@ export default function DashboardPage() {
   
       await axios.post(
         `http://localhost:5000/apply`,
-        { tenderId,proposalText },
+        { tender_id: tenderId, proposal_text: proposalText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert('Application submitted successfully!');
@@ -144,6 +159,22 @@ export default function DashboardPage() {
           <p className="text-gray-600">No tenders available at the moment.</p>
         )}
       </section>
+      <div className="flex justify-center space-x-4 mt-6">
+  <button
+    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+    disabled={page === 1}
+    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+  >
+    Previous
+  </button>
+  <span className="text-gray-700 font-medium">Page {page}</span>
+  <button
+    onClick={() => setPage((prev) => prev + 1)}
+    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+  >
+    Next
+  </button>
+</div>
     </div>
   );
 }
