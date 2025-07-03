@@ -25,4 +25,26 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/tenders', async (req, res) => {
+  const { min_budget, max_budget } = req.query;
+
+  try {
+    let query = db('tenders');
+
+    if (min_budget) {
+      query = query.where('budget', '>=', Number(min_budget));
+    }
+
+    if (max_budget) {
+      query = query.where('budget', '<=', Number(max_budget));
+    }
+
+    const tenders = await query.select('*').orderBy('created_at', 'desc');
+
+    res.json(tenders);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch tenders', details: err.message });
+  }
+});
+
 module.exports = router;
