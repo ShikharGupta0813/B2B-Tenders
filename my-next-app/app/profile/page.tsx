@@ -34,8 +34,13 @@ export default function ProfilePage() {
       setIndustry(data.industry);
       setDescription(data.description);
       setImageUrl(data.image_url);
-    } catch {
-      // No company yet
+    } catch(err:any) {
+      console.error('Failed to fetch company:', err);
+    if (err.response && err.response.status === 404) {
+      setCompany(null);  // No profile yet
+    } else {
+      alert('Error fetching company profile.');
+    }
     }
   }
 
@@ -86,7 +91,7 @@ export default function ProfilePage() {
   return (
     <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Company Profile</h1>
-
+       
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"

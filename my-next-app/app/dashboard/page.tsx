@@ -34,60 +34,116 @@ export default function DashboardPage() {
       setLoading(false);
     }
   }
-
-
-  if (loading) return <p className="p-6">Loading...</p>;
+  async function applyToTender(tenderId: string) {
+    try {
+      const proposalText = prompt('Enter your proposal text:');
+      if (!proposalText) return;
+  
+      await axios.post(
+        `http://localhost:5000/apply`,
+        { tenderId,proposalText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Application submitted successfully!');
+    }catch (error: any) {
+      console.error('Failed to apply:', error);
+      const message = error.response?.data?.message || 'Failed to apply. Please try again.';
+      alert(message);
+    }
+    
+  }
+   
+  if (loading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
 
   return (
+    <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10 relative">
+      <button
+        onClick={() => {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }}
+        className="absolute top-6 right-6 bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
+      >
+        Logout
+      </button>
 
-    <div className="p-6">
-        <button
-  onClick={() => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  }}
-  className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
->
-  Logout
-</button>
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+        Company Dashboard
+      </h1>
 
       {/* Company Profile Section */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Your Company</h2>
+      <section className="bg-white rounded-xl shadow-md p-6 mb-10">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          Your Company Profile
+        </h2>
         {company ? (
-          <div className="p-4 border rounded">
+          <div className="space-y-3">
             <p><strong>Name:</strong> {company.name}</p>
             <p><strong>Industry:</strong> {company.industry}</p>
             <p><strong>Description:</strong> {company.description}</p>
             {company.image_url && (
-              <img src={company.image_url} alt="Logo" className="h-20 mt-2 rounded" />
+              <img src={company.image_url} alt="Logo" className="h-24 rounded-lg border" />
             )}
           </div>
         ) : (
           <div className="text-red-600">
             No company profile found.{' '}
-            <a href="/profile" className="underline text-blue-600">Create one</a>
+            <a href="/profile" className="underline text-blue-600 hover:text-blue-800">
+              Create one
+            </a>
           </div>
         )}
-      </div>
+      </section>
+       {/* Add Navigation Buttons */}
+<div className="flex flex-wrap gap-4 mb-8">
+  <button
+    onClick={() => router.push('/profile')}
+    className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+  >
+    Edit Company Profile
+  </button>
+  <button
+    onClick={() => router.push('/application')}
+    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+  >
+    Create New Tender
+  </button>
+  <button
+    onClick={() => router.push('/tenders/my')}
+    className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+  >
+    View Applications
+  </button>
+</div>
 
       {/* Tender List Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">All Tenders</h2>
+      <section className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          Available Tenders
+        </h2>
+        
         {tenders.length > 0 ? (
-          tenders.map((tender) => (
-            <div key={tender.id} className="p-4 mb-3 border rounded">
-              <h3 className="font-bold text-lg">{tender.title}</h3>
-              <p>{tender.description}</p>
-              <p><strong>Budget:</strong> ₹{tender.budget}</p>
-              <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}</p>
-            </div>
-          ))
+          <div className="space-y-5">
+            {tenders.map((tender) => (
+              <div key={tender.id} className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-800">{tender.title}</h3>
+                <p className="text-gray-700 mt-2">{tender.description}</p>
+                <p className="mt-2"><strong>Budget:</strong> ₹{tender.budget}</p>
+                <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}</p>
+                <button
+  onClick={() => applyToTender(tender.id)}
+  className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+>
+  Apply
+</button>
+
+              </div>
+            ))}
+          </div>
         ) : (
-          <p>No tenders available.</p>
+          <p className="text-gray-600">No tenders available at the moment.</p>
         )}
-      </div>
+      </section>
     </div>
   );
 }
