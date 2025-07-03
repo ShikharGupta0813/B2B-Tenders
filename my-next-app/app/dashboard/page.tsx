@@ -11,6 +11,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const [page, setPage] = useState(1);
+  const [minBudget, setMinBudget] = useState('');
+  const [maxBudget, setMaxBudget] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+
 
   useEffect(() => {
     if (!token) {
@@ -65,8 +69,29 @@ export default function DashboardPage() {
       const message = error.response?.data?.message || 'Failed to apply. Please try again.';
       alert(message);
     }
-    
   }
+    async function fetchAllCompanies() {
+      try {
+        const res = await axios.get('http://localhost:5000/search');
+        setSearchResults(res.data);
+      } catch (err) {
+        console.error('Failed to load companies:', err);
+        alert('Failed to load companies');
+      }
+    }
+    async function handleSearch(e: React.FormEvent) {
+      e.preventDefault();
+      try {
+        const res = await axios.get('http://localhost:5000/search/tenders', {
+          params: { min_budget: minBudget, max_budget: maxBudget },
+        });
+        setTenders(res.data);
+      } catch (err) {
+        console.error('Search failed:', err);
+        alert('Search failed.');
+      }
+    }
+    
    
   if (loading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
 
@@ -110,26 +135,62 @@ export default function DashboardPage() {
         )}
       </section>
        {/* Add Navigation Buttons */}
-<div className="flex flex-wrap gap-4 mb-8">
+       <div className="flex flex-wrap md:flex-nowrap items-center justify-between mb-8 gap-4">
+  {/* Buttons Section */}
+  <div className="flex gap-4">
+    <button
+      onClick={() => router.push('/profile')}
+      className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+    >
+      Edit Company Profile
+    </button>
+    <button
+      onClick={() => router.push('/application')}
+      className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
+    >
+      Create New Tender
+    </button>
+    <button
+      onClick={() => router.push('/tenders/my')}
+      className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
+    >
+      View Applications
+    </button>
+    <button
+  onClick={() => router.push('/companies')}
+  className="bg-yellow-600 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-700 transition"
+>
+  View All Companies
+</button>
+
+  </div>
+
+  {/* Search Section */}
+  <form onSubmit={handleSearch} className="flex gap-2 items-center">
+  <input
+    type="number"
+    placeholder="Min Budget"
+    value={minBudget}
+    onChange={(e) => setMinBudget(e.target.value)}
+    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <input
+    type="number"
+    placeholder="Max Budget"
+    value={maxBudget}
+    onChange={(e) => setMaxBudget(e.target.value)}
+    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
   <button
-    onClick={() => router.push('/profile')}
-    className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+    type="submit"
+    className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm shadow hover:bg-blue-700 transition"
   >
-    Edit Company Profile
+    Search
   </button>
-  <button
-    onClick={() => router.push('/application')}
-    className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
-  >
-    Create New Tender
-  </button>
-  <button
-    onClick={() => router.push('/tenders/my')}
-    className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
-  >
-    View Applications
-  </button>
+</form>
+
 </div>
+
 
       {/* Tender List Section */}
       <section className="bg-white rounded-xl shadow-md p-6">
