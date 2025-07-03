@@ -14,16 +14,15 @@ router.post('/logo', authenticate, upload.single('logo'), async (req, res) => {
   const fileName = `company-${req.user.id}-${Date.now()}.${fileExt}`;
 
   const { data, error } = await supabase.storage
-    .from('company-logs')
-    .upload(fileName, file.buffer, {
-      contentType: file.mimetype,
-    });
+  .from('company-logs')
+  .upload(fileName, file.buffer, { contentType: file.mimetype });
 
-  if (error) return res.status(500).json({ error: error.message });
+if (error) return res.status(500).json({ error: error.message });
 
-  const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/company-logos/${fileName}`;
+const publicUrl = `${process.env.SUPABASE_URL}/storage/v1/object/public/company-logs/${fileName}`;
 
-  res.json({ url: publicUrl });
+res.json({ url: publicUrl });
+
 });
 
 module.exports = router;

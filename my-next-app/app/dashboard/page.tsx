@@ -112,28 +112,45 @@ export default function DashboardPage() {
       </h1>
 
       {/* Company Profile Section */}
-      <section className="bg-white rounded-xl shadow-md p-6 mb-10">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Your Company Profile
-        </h2>
-        {company ? (
-          <div className="space-y-3">
-            <p><strong>Name:</strong> {company.name}</p>
-            <p><strong>Industry:</strong> {company.industry}</p>
-            <p><strong>Description:</strong> {company.description}</p>
-            {company.image_url && (
-              <img src={company.image_url} alt="Logo" className="h-24 rounded-lg border" />
-            )}
-          </div>
-        ) : (
-          <div className="text-red-600">
-            No company profile found.{' '}
-            <a href="/profile" className="underline text-blue-600 hover:text-blue-800">
-              Create one
-            </a>
-          </div>
-        )}
-      </section>
+     {/* Company Profile Section */}
+<section className="bg-white rounded-xl shadow-md p-6 mb-10">
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-stretch">
+    
+    {/* Left Side: Heading + Info */}
+    <div className="flex-1 space-y-4">
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+        Your Company Profile
+      </h2>
+
+      {company ? (
+        <div className="space-y-3">
+          <p><strong>Name:</strong> {company.name}</p>
+          <p><strong>Industry:</strong> {company.industry}</p>
+          <p><strong>Description:</strong> {company.description}</p>
+        </div>
+      ) : (
+        <div className="text-red-600">
+          No company profile found.{' '}
+          <a href="/profile" className="underline text-blue-600 hover:text-blue-800">
+            Create one
+          </a>
+        </div>
+      )}
+    </div>
+
+    {/* Right Side: Image */}
+    {company?.image_url && (
+      <div className="ml-6 flex-shrink-0">
+        <img
+          src={company.image_url}
+          alt="Logo"
+          className="h-full max-h-40 w-auto object-contain rounded-lg border shadow-md"
+        />
+      </div>
+    )}
+  </div>
+</section>
+
        {/* Add Navigation Buttons */}
        <div className="flex flex-wrap md:flex-nowrap items-center justify-between mb-8 gap-4">
   {/* Buttons Section */}
