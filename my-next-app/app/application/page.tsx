@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function CreateTenderPage() {
   const [title, setTitle] = useState('');
@@ -20,11 +21,11 @@ export default function CreateTenderPage() {
         { title, description, budget, deadline },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert('Tender Created Successfully!');
+      toast.success('Tender Created Successfully!');
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
-      alert('First create a company to create tenders');
+      toast.error('First create a company to create tenders');
       router.push('/dashboard');
     }
   }

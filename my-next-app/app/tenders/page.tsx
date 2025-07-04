@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function TendersPage() {
   const router = useRouter();
@@ -58,9 +59,9 @@ export default function TendersPage() {
         }
       );
 
-      alert('Applied successfully!');
+      toast.success('Applied successfully!');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Application failed');
+      toast.error(err.response?.data?.message || 'Application failed');
     }
   }
 

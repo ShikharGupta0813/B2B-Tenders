@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function ProfilePage() {
       if (err.response && err.response.status === 404) {
         setCompany(null);
       } else {
-        alert('Error fetching company profile.');
+        toast.error('Error fetching company profile.');
       }
     }
   }
@@ -74,17 +75,17 @@ export default function ProfilePage() {
         await axios.put('http://localhost:5000/company', payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert('Company updated!');
+        toast.success('Company updated!');
       } else {
         await axios.post('http://localhost:5000/company', payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert('Company created!');
+        toast.success('Company created!');
       }
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
-      alert('Failed to save profile');
+      toast.error('Failed to save profile');
     }
   }
 
