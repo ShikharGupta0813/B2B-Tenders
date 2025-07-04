@@ -100,7 +100,7 @@ export default function DashboardPage() {
       <button
         onClick={() => {
           localStorage.removeItem('token');
-          window.location.href = '/login';
+          window.location.href = '/';
         }}
         className="absolute top-6 right-6 bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
       >
