@@ -44,6 +44,7 @@ Assignment/
 ```bash
 git clone https://github.com/YourGitHubUsername/B2B-Tenders.git
 cd B2B-Tenders
+```
 
 
 ### Backend Setup
