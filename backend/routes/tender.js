@@ -59,4 +59,22 @@ router.get('/company/:companyId', async (req, res) => {
   }
 });
 
+router.delete('/:tenderId', authenticate, async (req, res) => {
+  const { tenderId } = req.params;
+  try {
+    const company = await db('companies').where({ user_id: req.user.id }).first();
+    const tender = await db('tenders').where({ id: tenderId }).first();
+
+    if (!tender || tender.company_id !== company.id) {
+      return res.status(403).json({ message: 'Unauthorized to delete this tender' });
+    }
+
+    await db('tenders').where({ id: tenderId }).del();
+    res.json({ message: 'Tender deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete tender', details: err.message });
+  }
+});
+
+
 module.exports = router;

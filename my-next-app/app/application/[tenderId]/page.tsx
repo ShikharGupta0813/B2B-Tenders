@@ -26,7 +26,7 @@ export default function ApplicationsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Applications for Tender #{params.tenderId}</h1>
+      <h1 className="text-2xl font-bold mb-4">Applications for Tender</h1>
       {applications.length > 0 ? (
         applications.map((app) => (
           <div key={app.id} className="p-4 mb-3 border rounded">
