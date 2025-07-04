@@ -13,6 +13,7 @@ This is a full-stack web application for tender discovery, submission, and manag
 - Admin Panel for Tender Management
 - PostgreSQL Database Integration (Knex.js)
 - Responsive UI for Desktop & Mobile
+- Can Search for Comapnies from Name or Industry
 
 
 ---
@@ -139,6 +140,16 @@ https://b2-b-tenders.vercel.app
 
 Backend:  
 https://your-backend-url.onrender.com
+
+---
+
+## 🚦 Usage Flow (Important)
+1. Register or Login as a company user.
+2. After login, create your company profile (required only once).
+3. Once your company profile is created, you can:
+   - Browse tenders.
+   - Apply for tenders.
+   - Manage your tender applications.
 
 ---
 

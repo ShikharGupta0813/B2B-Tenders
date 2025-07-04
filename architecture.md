@@ -102,7 +102,8 @@ This document describes the high-level architecture, API design, authentication 
 | `/upload/logo`                               | POST   | Upload Company Logo/Profile Image to Supabase Storage |
 
 
-- All tender-related actions require authentication (JWT token).
+- All protected actions, including company-related and tender-related operations, require authentication via a valid JWT token.
+
 
 ---
 
