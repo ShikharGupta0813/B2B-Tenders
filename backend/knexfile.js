@@ -1,14 +1,24 @@
+require('dotenv').config();
 module.exports = {
   development: {
     client: 'pg',
     connection: {
-      host: '127.0.0.1',
-      user: 'postgres',
-      password: '2004',
-      database: 'b2b_tenders',
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    },
+    migrations: {
+      directory: './migrations',
+    },
+  },
+  production: {
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
     },
     migrations: {
       directory: './migrations',
     },
   },
 };
+
