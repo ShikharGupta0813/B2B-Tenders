@@ -10,14 +10,7 @@ export default function DashboardPage() {
   const [company, setCompany] = useState<any>(null);
   const [tenders, setTenders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTenderId, setActiveTenderId] = useState<number | null>(null);
-  const [proposalText, setProposalText] = useState("");
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const [page, setPage] = useState(1);
-  const [minBudget, setMinBudget] = useState("");
-  const [maxBudget, setMaxBudget] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   useEffect(() => {
     if (!token) {
@@ -26,22 +19,6 @@ export default function DashboardPage() {
       fetchData();
     }
   }, []);
-  async function fetchTenders(pageNumber = 1) {
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/tenders?page=${pageNumber}`
-      );
-      setTenders(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchTenders(page);
-  }, [page]);
 
   async function fetchData() {
     try {
@@ -50,54 +27,42 @@ export default function DashboardPage() {
       });
       setCompany(companyRes.data);
 
-      const tenderRes = await axios.get("http://localhost:5000/tenders");
-      setTenders(tenderRes.data);
+      const companyId = companyRes.data.id;
+
+      const res = await axios.get(
+        `http://localhost:5000/tenders/company/${companyId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setTenders(res.data);
     } catch (err) {
       console.error("Error:", err);
     } finally {
       setLoading(false);
     }
   }
-  async function applyToTender(tenderId: string) {
-    try {
-      if (!proposalText) {
-        toast.error("Proposal text cannot be empty.");
-        return;
-      }
 
-      await axios.post(
-        `http://localhost:5000/apply`,
-        { tender_id: tenderId, proposal_text: proposalText },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success("Successfully Applied");
-      setActiveTenderId(null);
-      setProposalText("");
-    } catch (error: any) {
-      console.error("Failed to apply:", error);
-      const message =
-        error.response?.data?.message || "Failed to apply. Please try again.";
-      toast.error(message);
-    }
-  }
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  // ✅ Delete tender function
+  async function handleDelete(tenderId: number) {
+    if (!confirm("Are you sure you want to delete this tender?")) return;
+
     try {
-      const res = await axios.get("http://localhost:5000/search/tenders", {
-        params: { min_budget: minBudget, max_budget: maxBudget },
+      await axios.delete(`http://localhost:5000/tenders/${tenderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setTenders(res.data);
+
+      toast.success("Tender deleted successfully");
+      setTenders(tenders.filter((tender) => tender.id !== tenderId));
     } catch (err) {
-      console.error("Search failed:", err);
-      toast.error("Search failed.");
+      console.error("Delete failed:", err);
+      toast.error("Failed to delete tender");
     }
   }
 
-  if (loading)
-    return <p className="p-6 text-center text-gray-600">Loading...</p>;
+  if (loading) return <p className="p-6 text-center text-gray-600">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10 relative">
+      {/* Logout Button */}
       <button
         onClick={() => {
           localStorage.removeItem("token");
@@ -113,195 +78,114 @@ export default function DashboardPage() {
       </h1>
 
       {/* Company Profile Section */}
-      {/* Company Profile Section */}
       <section className="bg-white rounded-xl shadow-md p-6 mb-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-stretch">
-          {/* Left Side: Heading + Info */}
-          <div className="flex-1 space-y-4">
+      <div className="flex flex-col md:flex-row md:gap-10 justify-between items-start md:items-start">
+      <div className="flex-1 md:max-w-6xl space-y-4">
+
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">
               Your Company Profile
             </h2>
-
             {company ? (
               <div className="space-y-3">
-                <p>
-                  <strong>Name:</strong> {company.name}
-                </p>
-                <p>
-                  <strong>Industry:</strong> {company.industry}
-                </p>
-                <p>
-                  <strong>Description:</strong> {company.description}
-                </p>
+                <p><strong>Name:</strong> {company.name}</p>
+                <p><strong>Industry:</strong> {company.industry}</p>
+                <p><strong>Description:</strong> {company.description}</p>
+                {company.website_url && (
+                  <p>
+                    <strong>Website:</strong>{" "}
+                    <a href={company.website_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      {company.website_url}
+                    </a>
+                  </p>
+                )}
+                <p><strong>Email:</strong> {company.contact_email}</p>
+                <p><strong>Phone:</strong> {company.phone_number}</p>
+
+                {company.services && (
+                  <div>
+                    <strong>Services:</strong>
+                    <ul className="list-disc list-inside text-gray-700">
+                      {company.services.split(",").map((s: string, i: number) => (
+                        <li key={i}>{s.trim()}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-red-600">
                 No company profile found.{" "}
-                <a
-                  href="/profile"
-                  className="underline text-blue-600 hover:text-blue-800"
-                >
-                  Create one
-                </a>
+                <a href="/profile" className="underline text-blue-600 hover:text-blue-800">Create one</a>
               </div>
             )}
           </div>
 
-          {/* Right Side: Image */}
           {company?.image_url && (
-            <div className="ml-6 flex-shrink-0">
-              <img
-                src={company.image_url}
-                alt="Logo"
-                className="h-full max-h-40 w-auto object-contain rounded-lg border shadow-md"
-              />
-            </div>
-          )}
+  <div className="ml-4 md:ml-0 md:mt-5 md:mr-14 flex-shrink-0 ">
+    <img
+      src={company.image_url}
+      alt="Logo"
+      className="h-full max-h-40 w-auto object-contain rounded-lg border shadow-md"
+    />
+  </div>
+)}
         </div>
       </section>
 
-      {/* Add Navigation Buttons */}
-      <div className="flex flex-wrap md:flex-nowrap items-center justify-between mb-8 gap-4">
-        {/* Buttons Section */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => router.push("/profile")}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition"
-          >
-            Edit Company Profile
-          </button>
-          <button
-            onClick={() => router.push("/application")}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition"
-          >
-            Create New Tender
-          </button>
-          <button
-            onClick={() => router.push("/tenders/my")}
-            className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition"
-          >
-            View Applications
-          </button>
-          <button
-            onClick={() => router.push("/companies")}
-            className="bg-yellow-600 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-700 transition"
-          >
-            View All Companies
-          </button>
-        </div>
-
-        {/* Search Section */}
-        <form onSubmit={handleSearch} className="flex gap-2 items-center">
-          <input
-            type="number"
-            placeholder="Min Budget"
-            value={minBudget}
-            onChange={(e) => setMinBudget(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="number"
-            placeholder="Max Budget"
-            value={maxBudget}
-            onChange={(e) => setMaxBudget(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-3 py-2 rounded-md text-sm shadow hover:bg-blue-700 transition"
-          >
-            Search
-          </button>
-        </form>
+      {/* Navigation Buttons */}
+      <div className="flex flex-wrap md:flex-nowrap  mb-8 gap-4">
+        <button onClick={() => router.push("/profile")} className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
+          Edit Company Profile
+        </button>
+        <button onClick={() => router.push("/application")} className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition">
+          Create New Tender
+        </button>
+        <button onClick={() => router.push("/companies")} className="bg-yellow-600 text-white px-4 py-2 rounded-lg shadow hover:bg-yellow-700 transition">
+          View All Companies
+        </button>
+        <button onClick={() => router.push("/tenders")} className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition">
+          Browse All Tenders
+        </button>
       </div>
 
-      {/* Tender List Section */}
+      {/* My Posted Tenders Section */}
       <section className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Available Tenders
+          My Posted Tenders
         </h2>
 
         {tenders.length > 0 ? (
           <div className="space-y-5">
             {tenders.map((tender) => (
-              <div
-                key={tender.id}
-                className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm"
-              >
-                <h3 className="text-lg font-bold text-gray-800">
+              <div key={tender.id} className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm">
+                <h3 className="font-bold text-lg text-gray-800 cursor-pointer hover:underline"
+                  onClick={() => router.push(`/application/${tender.id}`)}>
                   {tender.title}
                 </h3>
                 <p className="text-gray-700 mt-2">{tender.description}</p>
-                <p className="mt-2">
+                <p className="mt-2 text-gray-800">
                   <strong>Budget:</strong> ₹{tender.budget}
                 </p>
-                <p>
-                  <strong>Deadline:</strong>{" "}
-                  {new Date(tender.deadline).toLocaleDateString()}
+                <p className="text-gray-800">
+                  <strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}
                 </p>
-                <>
-                  {activeTenderId === tender.id ? (
-                    <div className="mt-4 space-y-3">
-                      <textarea
-                        placeholder="Enter your proposal here..."
-                        value={proposalText}
-                        onChange={(e) => setProposalText(e.target.value)}
-                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        rows={3}
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => applyToTender(tender.id)}
-                          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                        >
-                          Submit Proposal
-                        </button>
-                        <button
-                          onClick={() => {
-                            setActiveTenderId(null);
-                            setProposalText("");
-                          }}
-                          className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setActiveTenderId(tender.id);
-                        setProposalText("");
-                      }}
-                      className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                    >
-                      Apply
-                    </button>
-                  )}
-                </>
+                <div className="mt-4 flex gap-3">
+                  <button onClick={() => handleDelete(tender.id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+                    Delete
+                  </button>
+                  <button onClick={() => router.push(`/application/${tender.id}`)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    View Applications
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No tenders available at the moment.</p>
+          <p className="text-gray-600 text-center">No tenders posted yet.</p>
         )}
       </section>
-      <div className="flex justify-center space-x-4 mt-6">
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <span className="text-gray-700 font-medium">Page {page}</span>
-        <button
-          onClick={() => setPage((prev) => prev + 1)}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Next
-        </button>
-      </div>
     </div>
   );
 }

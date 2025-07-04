@@ -10,93 +10,148 @@ export default function TendersPage() {
   const [tenders, setTenders] = useState<any[]>([]);
   const [companyId, setCompanyId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTenderId, setActiveTenderId] = useState<number | null>(null);
+  const [proposalText, setProposalText] = useState('');
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!token) {
       router.push('/login');
     } else {
-      fetchTenders();
-      fetchCompany();
+      fetchData(page);
     }
-  }, []);
+  }, [page]);
 
-  async function fetchTenders() {
+  async function fetchData(pageNumber: number) {
     try {
-      const res = await axios.get('http://localhost:5000/tenders');
-      setTenders(res.data);
+      const companyRes = await axios.get('http://localhost:5000/company', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCompanyId(companyRes.data.id);
+
+      const tenderRes = await axios.get(`http://localhost:5000/tenders?page=${pageNumber}`);
+      setTenders(tenderRes.data);
     } catch (err) {
-      console.error('Failed to load tenders:', err);
+      console.error('Error:', err);
     } finally {
       setLoading(false);
     }
   }
 
-  async function fetchCompany() {
-    try {
-      const res = await axios.get('http://localhost:5000/company', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setCompanyId(res.data.id);
-    } catch {
-      setCompanyId(null);
+  async function applyToTender(tenderId: number) {
+    if (!proposalText) {
+      toast.error('Proposal text cannot be empty.');
+      return;
     }
-  }
 
-  async function handleApply(tenderId: number) {
     try {
-      const proposal = prompt('Enter your proposal:');
-      if (!proposal) return;
-
       await axios.post(
         'http://localhost:5000/apply',
-        {
-          tender_id: tenderId,
-          proposal_text: proposal,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { tender_id: tenderId, proposal_text: proposalText },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      toast.success('Applied successfully!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Application failed');
+      toast.success('Successfully Applied');
+      setActiveTenderId(null);
+      setProposalText('');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to apply.');
     }
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Tenders</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : tenders.length === 0 ? (
-        <p>No tenders available.</p>
-      ) : (
-        tenders.map((tender) => (
-          <div key={tender.id} className="p-4 mb-4 border rounded shadow">
-            <h2 className="text-lg font-semibold">{tender.title}</h2>
-            <p>{tender.description}</p>
-            <p>
-              <strong>Budget:</strong> ₹{tender.budget}
-            </p>
-            <p>
-              <strong>Deadline:</strong>{' '}
-              {new Date(tender.deadline).toLocaleDateString()}
-            </p>
+    <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+        Available Tenders
+      </h1>
 
-            {/* Don't show Apply button if it's user's own tender */}
-            {companyId && companyId !== tender.company_id && (
-              <button
-                onClick={() => handleApply(tender.id)}
-                className="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+      <section className="bg-white rounded-xl shadow-md p-6">
+        {loading ? (
+          <p className="text-gray-600 text-center">Loading tenders...</p>
+        ) : tenders.length > 0 ? (
+          <div className="space-y-5">
+            {tenders.map((tender) => (
+              <div
+                key={tender.id}
+                className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm"
               >
-                Apply
-              </button>
-            )}
+                <h3 className="text-lg font-bold text-gray-800">{tender.title}</h3>
+                <p className="text-gray-700 mt-2">{tender.description}</p>
+                <p className="mt-2">
+                  <strong>Budget:</strong> ₹{tender.budget}
+                </p>
+                <p>
+                  <strong>Deadline:</strong>{' '}
+                  {new Date(tender.deadline).toLocaleDateString()}
+                </p>
+
+                {companyId && companyId === tender.company_id ? null : (
+                  <>
+                    {activeTenderId === tender.id ? (
+                      <div className="mt-4 space-y-3">
+                        <textarea
+                          placeholder="Enter your proposal here..."
+                          value={proposalText}
+                          onChange={(e) => setProposalText(e.target.value)}
+                          className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          rows={3}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => applyToTender(tender.id)}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                          >
+                            Submit Proposal
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveTenderId(null);
+                              setProposalText('');
+                            }}
+                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 transition"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setActiveTenderId(tender.id);
+                          setProposalText('');
+                        }}
+                        className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                      >
+                        Apply
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
           </div>
-        ))
-      )}
+        ) : (
+          <p className="text-gray-600 text-center">No tenders available at the moment.</p>
+        )}
+      </section>
+
+      <div className="flex justify-center space-x-4 mt-6">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-gray-700 font-medium">Page {page}</span>
+        <button
+          onClick={() => setPage((prev) => prev + 1)}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

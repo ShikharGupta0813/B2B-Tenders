@@ -66,18 +66,39 @@ export default function CompanyDetailsPage() {
       {/* Company Profile */}
       <section className="bg-white rounded-xl shadow-md p-6 mb-10">
         {company ? (
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div className="flex-1 space-y-3">
+          <div className="flex flex-col md:flex-row md:gap-10 justify-between items-start md:items-start">
+      <div className="flex-1 md:max-w-6xl space-y-4">
               <p><strong>Name:</strong> {company.name}</p>
               <p><strong>Industry:</strong> {company.industry}</p>
               <p><strong>Description:</strong> {company.description}</p>
+              {company.website_url && (
+                <p><strong>Website:</strong>{' '}
+                  <a href={company.website_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    {company.website_url}
+                  </a>
+                </p>
+              )}
+              <p><strong>Email:</strong> {company.contact_email}</p>
+              <p><strong>Phone:</strong> {company.phone_number}</p>
+              {company.services && (
+                <div>
+                  <strong>Services:</strong>
+                  <ul className="list-disc list-inside text-gray-700">
+                    {company.services.split(',').map((s: string, idx: number) => (
+                      <li key={idx}>{s.trim()}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
             {company.image_url && (
-              <img
-                src={company.image_url}
-                alt="Logo"
-                className="h-32 rounded-lg border shadow-md"
-              />
+              <div className="ml-4 md:ml-0 md:mt-6 md:mr-14 flex-shrink-0">
+                <img
+                  src={company.image_url}
+                  alt="Logo"
+                  className="h-full max-h-40 w-auto object-contain rounded-lg border shadow-md"
+                />
+              </div>
             )}
           </div>
         ) : (
@@ -96,14 +117,9 @@ export default function CompanyDetailsPage() {
               <div key={tender.id} className="border rounded-lg p-5 bg-gray-50 shadow-sm">
                 <h3 className="text-lg font-bold text-gray-800">{tender.title}</h3>
                 <p className="text-gray-700 mt-2">{tender.description}</p>
-                <p className="mt-2">
-                  <strong>Budget:</strong> ₹{tender.budget}
-                </p>
-                <p>
-                  <strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}
-                </p>
+                <p className="mt-2"><strong>Budget:</strong> ₹{tender.budget}</p>
+                <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleDateString()}</p>
 
-                {/* Show Apply button if it's not my company */}
                 {myCompanyId && myCompanyId !== tender.company_id && (
                   <button
                     onClick={() => applyToTender(tender.id)}

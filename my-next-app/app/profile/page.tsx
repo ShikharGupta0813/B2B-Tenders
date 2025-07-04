@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,10 @@ export default function ProfilePage() {
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [description, setDescription] = useState('');
+  const [website, setWebsite] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [services, setServices] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState('');
 
@@ -34,7 +38,12 @@ export default function ProfilePage() {
       setName(data.name);
       setIndustry(data.industry);
       setDescription(data.description);
-      setImageUrl(data.image_url);
+      setImageUrl(data.image_url || '');
+      setWebsite(data.website_url || '');
+      setEmail(data.contact_email || '');
+      setPhone(data.phone_number || '');
+      setServices(data.services || '');
+      
     } catch (err: any) {
       console.error('Failed to fetch company:', err);
       if (err.response && err.response.status === 404) {
@@ -68,6 +77,10 @@ export default function ProfilePage() {
       industry,
       description,
       image_url: finalImageUrl,
+      website_url: website,
+      contact_email: email,
+      phone_number: phone,
+      services,
     };
 
     try {
@@ -91,45 +104,86 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10 px-4">
-      <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-xl">
+      <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-2xl">
         <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
           Company Profile
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Company Name</label>
-            <input
-              type="text"
-              placeholder="Enter Company Name"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Company Name</label>
+              <input
+                type="text"
+                placeholder="Enter Company Name"
+                className="w-full p-3 border rounded-lg"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Industry</label>
+              <input
+                type="text"
+                placeholder="Enter Industry"
+                className="w-full p-3 border rounded-lg"
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Website URL</label>
+              <input
+                type="url"
+                placeholder="https://example.com"
+                className="w-full p-3 border rounded-lg"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Contact Email</label>
+              <input
+                type="email"
+                placeholder="contact@example.com"
+                className="w-full p-3 border rounded-lg"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-medium mb-1">Phone Number</label>
+              <input
+                type="text"
+                placeholder="Enter Phone Number"
+                className="w-full p-3 border rounded-lg"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">Industry</label>
-            <input
-              type="text"
-              placeholder="Enter Industry"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={industry}
-              onChange={(e) => setIndustry(e.target.value)}
-              required
-            />
+            <label className="block text-gray-700 font-medium mb-1">Services (comma-separated)</label>
+            <textarea
+              placeholder="e.g. Consulting, Development, Marketing"
+              className="w-full p-3 border rounded-lg"
+              value={services}
+              onChange={(e) => setServices(e.target.value)}
+              rows={2}
+            ></textarea>
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium mb-1">Description</label>
             <textarea
-              placeholder="Enter Description"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter Company Description"
+              className="w-full p-3 border rounded-lg"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              required
               rows={4}
+              required
             ></textarea>
           </div>
 

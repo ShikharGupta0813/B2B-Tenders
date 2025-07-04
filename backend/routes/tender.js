@@ -30,7 +30,7 @@ router.post('/', authenticate, async (req, res) => {
 // 🔸 GET /tenders → List all tenders (paginated)
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = 2;
+  const limit = 6;
   const offset = (page - 1) * limit;
 
   try {
