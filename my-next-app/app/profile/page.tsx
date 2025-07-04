@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
   async function fetchCompany() {
     try {
-      const res = await axios.get('http://localhost:5000/company', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/company`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = res.data;
@@ -58,7 +58,7 @@ export default function ProfilePage() {
     if (!logoFile) return null;
     const formData = new FormData();
     formData.append('logo', logoFile);
-    const res = await axios.post('http://localhost:5000/upload/logo', formData, {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/logo`, formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return res.data.url;
@@ -85,12 +85,12 @@ export default function ProfilePage() {
 
     try {
       if (company) {
-        await axios.put('http://localhost:5000/company', payload, {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/company`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success('Company updated!');
       } else {
-        await axios.post('http://localhost:5000/company', payload, {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/company`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success('Company created!');

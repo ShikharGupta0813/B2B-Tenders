@@ -25,13 +25,13 @@ export default function CompanyDetailsPage() {
 
   async function fetchData() {
     try {
-      const companyRes = await axios.get(`http://localhost:5000/company/${companyId}`);
+      const companyRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/company/${companyId}`);
       setCompany(companyRes.data);
 
-      const tenderRes = await axios.get(`http://localhost:5000/tenders/company/${companyId}`);
+      const tenderRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tenders/company/${companyId}`);
       setTenders(tenderRes.data);
 
-      const myCompanyRes = await axios.get('http://localhost:5000/company', {
+      const myCompanyRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/company`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMyCompanyId(myCompanyRes.data.id);
@@ -47,7 +47,7 @@ export default function CompanyDetailsPage() {
 
     try {
       await axios.post(
-        'http://localhost:5000/apply',
+        `${process.env.NEXT_PUBLIC_API_URL}/apply`,
         { tender_id: tenderId, proposal_text: proposal },
         { headers: { Authorization: `Bearer ${token}` } }
       );

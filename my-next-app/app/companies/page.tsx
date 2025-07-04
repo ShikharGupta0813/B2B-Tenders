@@ -17,7 +17,7 @@ export default function CompaniesPage() {
 
   async function fetchCompanies() {
     try {
-      const res = await axios.get('http://localhost:5000/search');
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/search`);
       setCompanies(res.data);
     } catch (err) {
       console.error('Failed to load companies:', err);
@@ -30,7 +30,7 @@ export default function CompaniesPage() {
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const res = await axios.get('http://localhost:5000/search', {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/search`, {
         params: { name, industry },
       });
       setCompanies(res.data);

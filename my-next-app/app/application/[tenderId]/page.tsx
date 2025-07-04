@@ -13,7 +13,7 @@ export default function ApplicationsPage() {
     async function fetchApplications() {
       try {
         const res = await axios.get(
-          `http://localhost:5000/apply/${params.tenderId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/apply/${params.tenderId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setApplications(res.data);

@@ -17,7 +17,7 @@ export default function CreateTenderPage() {
 
     try {
       await axios.post(
-        'http://localhost:5000/tenders',
+        `${process.env.NEXT_PUBLIC_API_URL}/tenders`,
         { title, description, budget, deadline },
         { headers: { Authorization: `Bearer ${token}` } }
       );

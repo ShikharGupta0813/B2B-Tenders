@@ -22,7 +22,7 @@ export default function DashboardPage() {
 
   async function fetchData() {
     try {
-      const companyRes = await axios.get("http://localhost:5000/company", {
+      const companyRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/company`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCompany(companyRes.data);
@@ -30,7 +30,7 @@ export default function DashboardPage() {
       const companyId = companyRes.data.id;
 
       const res = await axios.get(
-        `http://localhost:5000/tenders/company/${companyId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tenders/company/${companyId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTenders(res.data);
@@ -46,7 +46,7 @@ export default function DashboardPage() {
     if (!confirm("Are you sure you want to delete this tender?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/tenders/${tenderId}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/tenders/${tenderId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
