@@ -49,4 +49,26 @@ router.put('/', authenticate, async (req, res) => {
   }
 });
 
+// GET /company/:companyId → Fetch company profile by companyId
+router.get('/:companyId', async (req, res) => {
+  const { companyId } = req.params;
+
+  try {
+    const company = await db('companies').where({ id: companyId }).first();
+
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    res.json(company);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch company' });
+  }
+});
+
+
+
+
+
 module.exports = router;

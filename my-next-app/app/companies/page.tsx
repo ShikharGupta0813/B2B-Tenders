@@ -42,65 +42,67 @@ export default function CompaniesPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 md:px-10">
-      <div className="flex flex-wrap md:flex-nowrap items-center justify-between mb-8 gap-4">
-        <h1 className="text-3xl font-extrabold text-gray-800">
-          All Company Profiles
-        </h1>
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+        All Company Profiles
+      </h1>
 
-        {/* Search Section */}
-        <form onSubmit={handleSearch} className="flex gap-2 items-center">
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            placeholder="Industry"
-            value={industry}
-            onChange={(e) => setIndustry(e.target.value)}
-            className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm shadow hover:bg-blue-700 transition"
-          >
-            Search
-          </button>
-        </form>
-      </div>
+      {/* Search Section */}
+      <form
+        onSubmit={handleSearch}
+        className="flex gap-2 items-center justify-center mb-8"
+      >
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="text"
+          placeholder="Industry"
+          value={industry}
+          onChange={(e) => setIndustry(e.target.value)}
+          className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm shadow hover:bg-blue-700 transition"
+        >
+          Search
+        </button>
+      </form>
 
-      {loading ? (
-        <p className="text-center text-gray-600">Loading...</p>
-      ) : companies.length === 0 ? (
-        <p className="text-center text-gray-600">No companies found.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {companies.map((company) => (
-            <div
-              key={company.id}
-              className="bg-white p-6 rounded-xl shadow-md border border-gray-200"
-            >
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                {company.name}
-              </h2>
-              <p className="text-gray-700 mb-2">
-                <strong>Industry:</strong> {company.industry}
-              </p>
-              <p className="text-gray-700 mb-2">{company.description}</p>
-              {company.image_url && (
-                <img
-                  src={company.image_url}
-                  alt="Logo"
-                  className="h-24 mt-2 rounded border"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      <section className="bg-white rounded-xl shadow-md p-6">
+        {loading ? (
+          <p className="text-center text-gray-600">Loading...</p>
+        ) : companies.length > 0 ? (
+          <div className="space-y-5">
+            {companies.map((company) => (
+              <div
+                key={company.id}
+                className="border border-gray-200 rounded-lg p-5 bg-gray-50 shadow-sm cursor-pointer hover:bg-gray-100 transition"
+                onClick={() => router.push(`/companies/${company.id}`)}
+              >
+                <h3 className="font-bold text-lg text-gray-800">{company.name}</h3>
+                <p className="text-gray-700 mt-2">
+                  <strong>Industry:</strong> {company.industry}
+                </p>
+                <p className="text-gray-700 mt-2">{company.description}</p>
+                {company.image_url && (
+                  <img
+                    src={company.image_url}
+                    alt="Logo"
+                    className="h-24 mt-2 rounded border"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-600 text-center">No companies found.</p>
+        )}
+      </section>
 
       <div className="mt-10 flex justify-center">
         <button
