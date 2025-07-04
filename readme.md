@@ -40,7 +40,7 @@ Assignment/
 
 ## ⚙️ Setup Instructions
 
-### 1. Clone the Repository
+### Clone the Repository
 ```bash
 git clone https://github.com/YourGitHubUsername/B2B-Tenders.git
 cd B2B-Tenders
@@ -49,26 +49,44 @@ cd B2B-Tenders
 
 ### Backend Setup
 
-1. Move to backend folder  
-2. Install dependencies  
-3. Create `.env` file with these values:
-
+1. Move to backend folder and Install dependencies
+```bash 
+cd backend
+npm install
+``` 
+2. Create `.env` file with these values:
+```bash
 PORT=5000
 DATABASE_URL=postgresql://<user>:<password>@<host>/<database>
+SUPABASE
 JWT_SECRET=supersecretkey
+```
+3. Run database migrations  
+```bash
+npm run migrate
+```
 
-4. Run database migrations  
-5. Start backend server  
+4. Start backend server 
+```bash
+npm start
+``` 
 
 ### Frontend Setup
 
-1. Move to my-next-app folder  
-2. Install dependencies  
-3. Create `.env.local` file with this value:
-
+1. Move to my-next-app folder and Install dependencies
+```bash
+cd ../my-next-app
+npm install
+```  
+2. Create `.env.local` file with this value:
+```bash
 NEXT_PUBLIC_API_URL=https://<your-backend-url>
+```
 
-4. Start the frontend development server  
+3. Start the frontend development server
+```bash
+npm run dev
+```  
 
 ---
 
