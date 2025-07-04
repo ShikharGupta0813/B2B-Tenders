@@ -2,13 +2,18 @@
 
 This is a full-stack web application for tender discovery, submission, and management. Companies can register, submit proposals for tenders, and manage their profiles easily.
 
-## 🚀 Features
+- ## 🚀 Features
+
 - Company Registration & Login (JWT-based)
 - Browse & Apply to Available Tenders
+- Browse All Companies & View Their Details
+- View All Tenders Posted by a Specific Company
+- View All Applications Received for Your Posted Tenders
 - Company Dashboard & Profile Management
-- Admin Panel for Tender Management (optional)
+- Admin Panel for Tender Management
 - PostgreSQL Database Integration (Knex.js)
 - Responsive UI for Desktop & Mobile
+
 
 ---
 
@@ -23,18 +28,21 @@ This is a full-stack web application for tender discovery, submission, and manag
 ---
 
 ## 🗂️ Folder Structure
-Assignment/
-│
-├── backend/ → Express.js Backend (API)
-│ ├── migrations/ → Knex Migrations
-│ ├── src/ → API Routes & Controllers
-│ ├── knexfile.js → DB Config
-│ └── .env → Environment Variables
-│
-└── my-next-app/ → Next.js Frontend
-├── app/ → Pages (Routes)
-├── public/ → Images
-└── .env.local → Frontend Environment Variables
+
+B2B Tenders/
+
+- backend/ → Express.js Backend (API)
+  - migrations/ → Knex Migrations
+  - middlewares/ → Middleware Function
+  - routes/ → API Routes Handlers
+  - knexfile.js → DB Config
+  - .env → Environment Variables
+  
+
+- my-next-app/ → Next.js Frontend
+  - app/ → Pages (Routes)
+  - public/ → Images & Static Files
+  - .env.local → Frontend Environment Variables
 
 ---
 
@@ -60,6 +68,8 @@ PORT=5000
 DATABASE_URL=postgresql://<user>:<password>@<host>/<database>
 SUPABASE
 JWT_SECRET=supersecretkey
+SUPABASE_URL=https://<your-supabase-url>.supabase.co
+SUPABASE_KEY=<your-supabase-key>
 ```
 3. Run database migrations  
 ```bash
@@ -138,10 +148,6 @@ Shikhar Gupta
 B2B Tenders — Internship Project Assignment
 
 ---
-
-## 📝 License
-
-This project is for learning & demonstration purposes only.
 
 
 
